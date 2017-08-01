@@ -1,17 +1,9 @@
-//#ifndef CLIENT_H
-//#define CLIENT_H
+#ifndef CLIENT_H
+#define CLIENT_H
 
-typedef struct serverTalk serverTalk;
-struct serverTalk
-{
-	int sockfd;
-	double theta;
-	double epsilon;
-	GtkTextBuffer *bufferGtk;
-	struct sockaddr_in serverAddress;
-};
+#include "ServerTalk.h"
 
 int connect2server(serverTalk *data);
 int talk2server(serverTalk *gdata);
 
-//#endif
+#endif

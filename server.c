@@ -51,7 +51,7 @@ void close_server(PairInt sockets)
 	close(sockets.x);
 }
 
-int parseCommand(char* command, double a[MATRIX_DIM][MATRIX_DIM], double b[MATRIX_DIM][MATRIX_DIM])
+int parseCommand(char* command, Point* psi)
 {
 	char word[256] = {0};
 	char *token = NULL;
@@ -64,66 +64,23 @@ int parseCommand(char* command, double a[MATRIX_DIM][MATRIX_DIM], double b[MATRI
 
 	if(strcmp(word, "exit") == 0)
 		return 0;
-	else if(strcmp(word, "resetPsi") == 0)
-	{
-		strcpy(command, word);
+	else if(strcmp(word, "newPsi") == 0)
+	{//On a reçu des nouvelles coordonnées pour Psi.
+		token = strtok(NULL, delimiter);
+		COMMA2COLON(token);
+		psi->x = atof(token);
+		token = strtok(NULL, delimiter);
+		COMMA2COLON(token);
+		psi->y = atof(token);
+		token = strtok(NULL, delimiter);
+		COMMA2COLON(token);
+		psi->z = atof(token);
+		token = strtok(NULL, delimiter);
+		COMMA2COLON(token);
+		psi->h = atof(token);
+		fprintf(stderr, "On a mis à jour psi : %lf, %lf, %lf, %lf\n", psi->x, psi->y, psi->z, psi->h);
 		return 1;
 	}
-	else if(strcmp(word, "new_matrices") == 0)
-	{
-		token = strtok(NULL, delimiter);
-		if(token == NULL)
-			return -1;
-		else
-		{
-			strcpy(word, token);
-			int preselect = atoi(word);
-
-			//On charge les angles
-			token = strtok(NULL, delimiter);
-			double theta = 0, epsilon = 0;
-
-			if(token != NULL)
-			{
-				theta = atof(token);
-				token = strtok(NULL, delimiter);
-
-				if(token != NULL)
-					epsilon = atof(token);
-
-			}
-
-			fprintf(stderr, "On prend theta = %lf et epsilon = %lf", theta, epsilon);
-			fflush(stderr);
-			switch(preselect)
-			{
-				case 1:
-				a[0][0] = cos(theta);
-				a[0][1] = 0;
-				a[1][0] = 0;
-				a[1][1] = sin(theta);
-				b[0][0] = cos(epsilon);
-				b[0][1] = 0;
-				b[1][0] = 0;
-				b[1][1] = sin(epsilon);
-				break;
-
-				case 2:
-				a[0][0] = cos(theta);
-				a[0][1] = 0;
-				a[1][0] = 0;
-				a[1][1] = sin(theta);
-				b[0][0] = cos(epsilon);
-				b[0][1] = 0;
-				b[1][0] = 0;
-				b[1][1] = sin(epsilon);
-				break;
-			}
-			return 1;
-		}
-	}
-	else //Commande inconnue
+	else
 		return -1;
-	
-	fprintf(stderr, "On a fini de parser !\n");
 }

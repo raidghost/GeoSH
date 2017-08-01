@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,6 +25,22 @@ int main(int argc, char *argv[])
 
 	data.theta = 0;
 	data.epsilon = 0;
+	data.exit = FALSE;
+
+	data.psi.x = 1/sqrt(2);
+	data.psi.y = 0;
+	data.psi.z = 0;
+	data.psi.h = 1/sqrt(2);
+
+	data.m[0][0] = cos(data.theta);
+	data.m[0][1] = 0;
+	data.m[1][0] = 0;
+	data.m[1][1] = sin(data.theta);
+
+	data.n[0][0] = 0;
+	data.n[0][1] = cos(data.epsilon);
+	data.n[1][0] = sin(data.epsilon);
+	data.n[1][1] = 0;
 
 	gtk_init(&argc, &argv);
 
@@ -67,6 +84,10 @@ int main(int argc, char *argv[])
 	button = gtk_button_new_with_label("Reset Psi");
 	g_signal_connect(button, "clicked", G_CALLBACK(resetPsi), (gpointer)&data);
 	gtk_grid_attach(GTK_GRID(grid), button, 2, 2, 1, 1);
+
+	button = gtk_button_new_with_label("Play");
+	g_signal_connect(button, "clicked", G_CALLBACK(play), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID(grid), button, 2, 3, 1, 1);
 
 	textview = gtk_text_view_new();
 	data.bufferGtk = gtk_text_view_get_buffer(GTK_TEXT_VIEW (textview));

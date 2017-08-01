@@ -56,15 +56,20 @@ int connect2server(serverTalk *data)
 int talk2server(struct serverTalk *data)
 {
 	int sockfd = data->sockfd, n = 0;
+	char* buffer = (char*)malloc(256 * sizeof(char));
 	GtkTextIter start, end;
+	struct sockaddr_in serverAddress = data->serverAddress;
 
 	gtk_text_buffer_get_bounds (data->bufferGtk, &start, &end);
-	char* buffer = (char*)malloc(256 * sizeof(char));
 	bzero(buffer, 256);
-	//Revoir ça...
-	strcpy(buffer, gtk_text_buffer_get_text(data->bufferGtk, &start, &end, 0));
 
-	struct sockaddr_in serverAddress = data->serverAddress;
+	if(data->exit)
+		strcpy(buffer, "exit");
+	else
+	{
+		sprintf(buffer, "newPsi %lf %lf %lf %lf", data->psi.x, data->psi.y, data->psi.z, data->psi.h);
+		g_print("Voilà : %s\n", buffer);
+	}
 
 	n = write(sockfd, buffer, strlen(buffer));
 	if(n < 0)

@@ -11,7 +11,6 @@
 #include <GL/glu.h>
 
 #include "graphics.h"
-#include "game.h"
 #include "server.h"
 
 #define PI 3.14159
@@ -23,7 +22,7 @@
 
 int main(int argc, char *argv[])
 {
-	int run = TRUE, keyDown = FALSE;
+	int run = TRUE, keyDown = FALSE, parseAnswer = 0;
 	unsigned int i = 0, j = 0;
 	double angleX = 0, angleY = 0, angleZ = 0;
 
@@ -33,28 +32,6 @@ int main(int argc, char *argv[])
 	psiOld.z = 1/sqrt(2);
 	psiOld.h = 0;
 	psiNew = psiOld;
-	double a[2][2], b[2][2];
-	a[0][0] = 1;
-	a[0][1] = 0;
-	a[1][0] = 0;
-	a[1][1] = 1;
-	b[0][0] = 1;
-	b[0][1] = 0;
-	b[1][0] = 0;
-	b[1][1] = 1;
-
-	/*Initialisation du serveur
-		bzero(buffer,256);
-	 n = read(newsockfd,buffer,255);
-	 if (n < 0)
-	 	error("ERROR reading from socket");
-	
-	 fprintf(stderr, "Here is the message: %s\n",buffer);
-	 n = write(newsockfd,"1",2);
-	 if (n < 0) error("ERROR writing to socket");
-	 close(newsockfd);
-	 close(sockfd);
-	 //Fin initialisation server*/
 
 	int n;
 	char buffer[256];
@@ -83,8 +60,6 @@ int main(int argc, char *argv[])
 
 	showSphere(&psiOld, &psiNew, angleX, angleY, angleZ);
 
-
-
 	while(run)
 	{
 		do
@@ -103,6 +78,8 @@ int main(int argc, char *argv[])
 			{
 				//The has data available to be read
 				bzero(buffer, 255);
+				fprintf(stderr, "lecture\n");
+				fflush(stderr);
 				result = recv(sockets.y, buffer, 255, 0);
 				if(result == 0)
 				{
@@ -112,28 +89,20 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					if(parseCommand(buffer, a, b) == -1)
-						fprintf(stderr, "Mauvaise commande\n");
-					else
+					psiOld = psiNew;
+					parseAnswer = parseCommand(buffer, &psiNew);
+					switch(parseAnswer)
 					{
-						if(strcmp(buffer, "new_matrices") == 0)
-						{
-							fprintf(stderr, "changement matrices\n");
-							psiOld = psiNew;
-							psiNew = measure(&psiNew, a, b);
-						}
-						else if(strcmp(buffer, "resetPsi") == 0)
-						{
-							psiNew.x = 0;
-							psiNew.y = 1/sqrt(2);
-							psiNew.z = 1/sqrt(2);
-							psiNew.h = 0;
-						}
-						else if(strcmp(buffer, "exit") == 0)
-						{
-							fprintf(stderr, "Bye !\n");
-							run = FALSE;
-						}
+						case 1:
+						fprintf(stderr, "Psi a bien été mis à jour.\n");
+						break;
+
+						case -1:
+						fprintf(stderr, "Erreur lors de la mise à jour de Psi.\n");
+						break;
+
+						case 0://On quite le programme à la demande du client.
+						run = FALSE;
 					}
 				}
 			}
@@ -165,14 +134,6 @@ int main(int argc, char *argv[])
 				keyDown = FALSE;
 				switch(event.key.keysym.sym)
 				{
-					case SDLK_ESCAPE:
-					run = FALSE;
-					break;
-
-					case SDLK_RETURN:
-					fprintf(stderr, "okok");
-					break;
-
 					case SDLK_RIGHT:
 					angleZ++;
 					break;

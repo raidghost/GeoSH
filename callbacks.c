@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,9 +12,18 @@
 
 #include "client.h"
 #include "callbacks.h"
+#include "game.h"
 
 #define PORT 2000
 #define HOST "localhost"
+
+void play(GtkWidget* button, gpointer gdata)
+{
+	struct serverTalk *data = (struct serverTalk*)gdata;
+	data->psi = measure(data->psi, data->m, data->n);
+	g_print("play %lf %lf %lf %lf\n", data->psi.x, data->psi.y, data->psi.z, data->psi.h);
+	talk2server(data);
+}
 
 int connectionButton(GtkWidget* button, gpointer gdata)
 {
@@ -40,8 +50,8 @@ void scale_adjustment_theta(GtkWidget *widget, gpointer gdata)
 	char command[256] = "";
 
 	data->theta = gtk_range_get_value(GTK_RANGE(widget));
-	sprintf(command, "new_matrices 1 %lf %lf", data->theta, data->epsilon);
-	gtk_text_buffer_set_text(data->bufferGtk, command, -1);
+	data->m[0][0] = cos(data->theta);
+	data->m[1][1] = sin(data->theta);
 }
 
 void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
@@ -50,21 +60,24 @@ void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
 	char command[256] = "";
 
 	data->epsilon = gtk_range_get_value(GTK_RANGE(widget));
-	sprintf(command, "new_matrices 1 %lf %lf", data->epsilon, data->epsilon);
-	gtk_text_buffer_set_text(data->bufferGtk, command, -1);
+	data->n[0][1] = cos(data->epsilon);
+	data->n[1][0] = sin(data->epsilon);
 }
 
 void resetPsi(GtkWidget *widget, gpointer gdata)
 {
 	struct serverTalk* data = (serverTalk*)gdata;
-	gtk_text_buffer_set_text(data->bufferGtk, "resetPsi", -1);
-	talk2server(gdata);
+	data->psi.x = 1/sqrt(2);
+	data->psi.y = 0;
+	data->psi.z = 0;
+	data->psi.h = 1/sqrt(2);
+	talk2server(data);
 }
 
 void quit(GtkWidget *widget, gpointer gdata)
 {
 	struct serverTalk* data = (serverTalk*)gdata;
-	gtk_text_buffer_set_text(data->bufferGtk, "exit", -1);
+	data->exit = TRUE;
 	talk2server(data);
 	close(data->sockfd);
 	gtk_main_quit();
