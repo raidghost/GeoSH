@@ -6,7 +6,7 @@
 
 #include "game.h"
 
-void tensor(const double a[MATRIX_DIM][MATRIX_DIM], const double b[MATRIX_DIM][MATRIX_DIM], double *c[VECTOR_DIM])
+void tensor(const double a[MATRIX_DIM][MATRIX_DIM], const double b[MATRIX_DIM][MATRIX_DIM], double c[VECTOR_DIM][VECTOR_DIM])
 //Computes the tensor product of two matrices of dimension MATRIX_DIM.
 {
 	for(int i = 0 ; i < VECTOR_DIM ; i++)
@@ -16,7 +16,7 @@ void tensor(const double a[MATRIX_DIM][MATRIX_DIM], const double b[MATRIX_DIM][M
 	}
 }
 
-Point matrixVectorProduct(const double *m[VECTOR_DIM], const Point *vector)
+Point matrixVectorProduct(const double m[VECTOR_DIM][VECTOR_DIM], const Point *vector)
 {
 	unsigned int i = 0, j = 0;
 	double lines[VECTOR_DIM] = {0}, vect2List[VECTOR_DIM] = {0};
@@ -30,10 +30,7 @@ Point matrixVectorProduct(const double *m[VECTOR_DIM], const Point *vector)
 	for(i = 0 ; i < VECTOR_DIM ; i++)
 	{
 		for(j = 0 ; j < VECTOR_DIM ; j++)
-		{
 			lines[i] += m[i][j] * vect2List[j];
-			//printf("m[%d][%d] = %lf et v[%d] = %lf\n", i,j,m[i][j], j, vect2List[j]);
-		}
 	}
 	
 	result.x = lines[0];
@@ -72,10 +69,11 @@ void normalize_3D(Point *point)
 	point->y /= alpha;
 	point->z /= alpha;
 }
+
 double proba(const Point *psi, const double m[MATRIX_DIM][MATRIX_DIM], const double n[MATRIX_DIM][MATRIX_DIM])
 //Returns the probability of Alice answering "a" and Bob answering "b" given the setting (psi,m,n) (where m -> a, n -> b)
 {
-	//a0 is the first column of m.
+	//a0 is the first column of m, a1 the second.
 	double a0[2], a1[2], b0[2], b1[2];
 	a0[0] = m[0][0];
 	a0[1] = m[1][0];
@@ -87,34 +85,22 @@ double proba(const Point *psi, const double m[MATRIX_DIM][MATRIX_DIM], const dou
 	b1[0] = n[0][1];
 	b1[1] = n[1][1];
 
-	return 0.5 * (NORM2D2(a0) * NORM2D2(b0) + NORM2D2(a1) * NORM2D2(b1) + 2 * (a0[0] * a1[0] + a0[1] * a1[1]) * (b0[0] * b1[0] + b0[1] * b1[1]));
+	return psi-> x * psi->x * NORM2D2(a0) * NORM2D2(b0) + psi->y * psi->y * NORM2D2(a0) * NORM2D2(b1) + psi->z * psi->z * NORM2D2(a1) * NORM2D2(b0) + psi->h * psi->h * NORM2D2(a1) * NORM2D2(b1) + 2 * psi->x * psi->y * NORM2D2(a0) * SCALAR(b0,b1) + 2 * psi->x * psi->z * NORM2D2(b0) * SCALAR(a0,a1) + 2 * psi->x * psi->h * SCALAR(a0,a1) * SCALAR(b0,b1) + 2 * psi->y * psi->z * SCALAR(a0,a1) * SCALAR(b0,b1) + 2 * psi->y * psi->h * SCALAR(a0,a1) * NORM2D2(b1) + 2 * psi->z * psi->h * NORM2D2(a1) * SCALAR(b0,b1);
 }
 
-Point measure(const Point psi, const double m[MATRIX_DIM][MATRIX_DIM], const double n[MATRIX_DIM][MATRIX_DIM])
-{
+Point measure(const Point *psi, const double m[MATRIX_DIM][MATRIX_DIM], const double n[MATRIX_DIM][MATRIX_DIM])
+{//This function returns the post measurement state after measuring with m and n.
 	Point postState;
-	double **c = NULL;
+	double *c = NULL;
 
-	c = (double**)malloc(VECTOR_DIM * sizeof(double*));
+	c = (double*)malloc(VECTOR_DIM * VECTOR_DIM * sizeof(double));
 	if(c == NULL)
 		exit(EXIT_FAILURE);
-	
-	for(int i = 0 ; i < VECTOR_DIM ; i++)
-	{
-		c[i] = (double*)malloc(VECTOR_DIM * sizeof(double));
-		if(c[i] == NULL)
-			exit(EXIT_FAILURE);
-	}
-	
-	tensor(m,n,c);
-	postState = matrixVectorProduct((const double**)c, &psi);
 
-	for(int i = 0 ; i < VECTOR_DIM ; i++)
-		free(c[i]);
-	
+	tensor(m,n,(double (*)[VECTOR_DIM])c);
+	postState = matrixVectorProduct((double (*)[VECTOR_DIM])c, psi);
+
 	free(c);
-
-	normalize_3D(&postState);
-//	fprintf(stderr, "%lf\n", proba(psi, m, n));
+	normalize(&postState);
 	return postState;
 }

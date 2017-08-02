@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 	serverTalk data;
 	GtkWidget *window, *grid, *button, *label, *textview;
 
-	data.theta = 0;
-	data.epsilon = 0;
+	data.theta = PI / 3;
+	data.epsilon = PI / 8;
 	data.exit = FALSE;
 
 	data.psi.x = 1/sqrt(2);
@@ -41,6 +41,17 @@ int main(int argc, char *argv[])
 	data.n[0][1] = cos(data.epsilon);
 	data.n[1][0] = sin(data.epsilon);
 	data.n[1][1] = 0;
+
+//	data.m[0][0] = 1;
+//	data.m[0][1] = 0;
+//	data.m[1][0] = 0;
+//	data.m[1][1] = 1;
+
+//	data.n[0][0] = 1;
+//	data.n[0][1] = 0;
+//	data.n[1][0] = 0;
+//	data.n[1][1] = 1;
+
 
 	gtk_init(&argc, &argv);
 

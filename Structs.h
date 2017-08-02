@@ -7,6 +7,7 @@
 #define PI 3.14159
 #define SQUARE(x) (x*x)
 #define NORM2D2(x) (x[0]*x[0] + x[1]*x[1])
+#define SCALAR(x,y) (x[0] * y[0] + x[1] * y[1])
 
 typedef struct Point Point;
 struct Point

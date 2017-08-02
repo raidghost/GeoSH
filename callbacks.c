@@ -20,8 +20,8 @@
 void play(GtkWidget* button, gpointer gdata)
 {
 	struct serverTalk *data = (struct serverTalk*)gdata;
-	data->psi = measure(data->psi, data->m, data->n);
-	g_print("play %lf %lf %lf %lf\n", data->psi.x, data->psi.y, data->psi.z, data->psi.h);
+	g_print("Alice et Bob gagnent avec proba %lf\n", proba(&(data->psi), data->m, data->n));
+	data->psi = measure(&(data->psi), data->m, data->n);
 	talk2server(data);
 }
 

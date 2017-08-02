@@ -54,19 +54,44 @@ void showSphere(const Point *psiOld, const Point *psiNew, double angleX, double 
 
     gluDeleteQuadric(params);
 
+	double x = 0, y = 0, z = 0, alpha = 0;
 
+	alpha = sqrt(psiOld->x * psiOld->x + psiOld->y * psiOld->y + psiOld->z * psiOld->z);
     glBegin(GL_LINES);
-    glColor3ub(127.5 * (1-psiOld->h),0,127.5 * (1+psiOld->h));
-    glVertex3d(0,0,0);
-    glVertex3d(psiOld->x, psiOld->y, psiOld->z);
+	if(alpha != 0)
+	{
+		x = psiOld->x / alpha;
+		y = psiOld->y / alpha;
+		z = psiOld->z / alpha;
+    	glColor3ub(127.5 * (1-psiOld->h),0,127.5 * (1+psiOld->h));
+	    glVertex3d(psiOld->x, psiOld->y, psiOld->z);
+    	glVertex3d(0,0,0);
+	}
+	else
+	{//psiOld->h = 1 so we display something special.
+		glColor3ub(255, 0, 0);
+		glVertex3d(0,0,1);
+	}
     glEnd();
 
+	alpha = sqrt(psiNew->x * psiNew->x + psiNew->y * psiNew->y + psiNew->z * psiNew->z);
     glBegin(GL_LINES);
-    glColor3ub(127.5 * (1-psiNew->h),0,127.5 * (1+psiNew->h));
-    glVertex3d(0,0,0);
-    glVertex3d(psiNew->x, psiNew->y, psiNew->z);
+	if(alpha != 0)
+	{
+		x = psiNew->x / alpha;
+		y = psiNew->y / alpha;
+		z = psiNew->z / alpha;
+    	glColor3ub(127.5 * (1-psiNew->h),0,127.5 * (1+psiNew->h));
+	    glVertex3d(psiNew->x, psiNew->y, psiNew->z);
+    	glVertex3d(0,0,0);
+	}
+	else
+	{//psiNew->h = 1 so we display something special.
+		glColor3ub(255, 0, 0);
+		glVertex3d(0,0,1);
+	}
     glEnd();
-
-    glFlush();
-    SDL_GL_SwapBuffers();
+	
+	glFlush();
+	SDL_GL_SwapBuffers();
 }
