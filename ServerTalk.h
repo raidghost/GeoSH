@@ -10,11 +10,26 @@ struct serverTalk
 	int exit;
 	double theta;
 	double epsilon;
-	double m[MATRIX_DIM][MATRIX_DIM];
-	double n[MATRIX_DIM][MATRIX_DIM];
-	Point psi;
+
+	//Measurements : {m0_0,m0_1} and {m1_0,m1_1} are sets of measurements for Alice.
+	double m0_0[MATRIX_DIM][MATRIX_DIM];
+	double n0_0[MATRIX_DIM][MATRIX_DIM];
+	double m0_1[MATRIX_DIM][MATRIX_DIM];
+	double n0_1[MATRIX_DIM][MATRIX_DIM];
+
+	double m1_0[MATRIX_DIM][MATRIX_DIM];
+	double n1_0[MATRIX_DIM][MATRIX_DIM];
+	double m1_1[MATRIX_DIM][MATRIX_DIM];
+	double n1_1[MATRIX_DIM][MATRIX_DIM];
+
+	//States. psi_ij should be the state once Alice has just seen i and Bob j.
+	Point psi_00, psi_01, psi_10, psi_11;
+	Point *psi_current;//The current psi to print. This should point toward one of the previous psi.
 	GtkTextBuffer *bufferGtk;
+	GtkWidget *text2print;
 	struct sockaddr_in serverAddress;
 };
 
+void init_psi(serverTalk* s);
+void update_measurements(serverTalk* s);
 #endif

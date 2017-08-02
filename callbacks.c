@@ -20,8 +20,20 @@
 void play(GtkWidget* button, gpointer gdata)
 {
 	struct serverTalk *data = (struct serverTalk*)gdata;
-	g_print("Alice et Bob gagnent avec proba %lf\n", proba(&(data->psi), data->m, data->n));
-	data->psi = measure(&(data->psi), data->m, data->n);
+	gchar text[256] = "";
+	int x = 0, y = 0;
+
+/*	x = rand() % 2;
+	y = rand() % 2;*/
+
+	if(x == 0 && y == 0)
+	{
+		data->psi_current = &(data->psi_00);
+		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", proba(data->psi_current, data->m0_0, data->n0_0), x, y);
+		*data->psi_current = measure(data->psi_current, data->m0_0, data->n0_0);
+	}
+	
+	gtk_label_set_text(GTK_LABEL(data->text2print), text);
 	talk2server(data);
 }
 
@@ -50,8 +62,8 @@ void scale_adjustment_theta(GtkWidget *widget, gpointer gdata)
 	char command[256] = "";
 
 	data->theta = gtk_range_get_value(GTK_RANGE(widget));
-	data->m[0][0] = cos(data->theta);
-	data->m[1][1] = sin(data->theta);
+	data->m0_0[0][0] = cos(data->theta);
+	data->m0_0[1][1] = sin(data->theta);
 }
 
 void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
@@ -60,18 +72,14 @@ void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
 	char command[256] = "";
 
 	data->epsilon = gtk_range_get_value(GTK_RANGE(widget));
-	data->n[0][1] = cos(data->epsilon);
-	data->n[1][0] = sin(data->epsilon);
+	data->n0_0[0][1] = cos(data->epsilon);
+	data->n0_0[1][0] = sin(data->epsilon);
 }
 
 void resetPsi(GtkWidget *widget, gpointer gdata)
 {
-	struct serverTalk* data = (serverTalk*)gdata;
-	data->psi.x = 1/sqrt(2);
-	data->psi.y = 0;
-	data->psi.z = 0;
-	data->psi.h = 1/sqrt(2);
-	talk2server(data);
+	init_psi((serverTalk*)gdata);
+	talk2server((serverTalk*)gdata);
 }
 
 void quit(GtkWidget *widget, gpointer gdata)

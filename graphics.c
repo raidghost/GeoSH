@@ -64,7 +64,7 @@ void showSphere(const Point *psiOld, const Point *psiNew, double angleX, double 
 		y = psiOld->y / alpha;
 		z = psiOld->z / alpha;
     	glColor3ub(127.5 * (1-psiOld->h),0,127.5 * (1+psiOld->h));
-	    glVertex3d(psiOld->x, psiOld->y, psiOld->z);
+	    glVertex3d(x, y, z);
     	glVertex3d(0,0,0);
 	}
 	else
@@ -82,7 +82,7 @@ void showSphere(const Point *psiOld, const Point *psiNew, double angleX, double 
 		y = psiNew->y / alpha;
 		z = psiNew->z / alpha;
     	glColor3ub(127.5 * (1-psiNew->h),0,127.5 * (1+psiNew->h));
-	    glVertex3d(psiNew->x, psiNew->y, psiNew->z);
+	    glVertex3d(x, y, z);
     	glVertex3d(0,0,0);
 	}
 	else

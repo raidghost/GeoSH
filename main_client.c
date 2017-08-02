@@ -20,38 +20,16 @@
 
 int main(int argc, char *argv[])
 {
-	serverTalk data;
-	GtkWidget *window, *grid, *button, *label, *textview;
+	srand(0);
 
+	serverTalk data;
+	GtkWidget *window, *grid, *button, *textview;
+
+	init_psi(&data);
 	data.theta = PI / 3;
 	data.epsilon = PI / 8;
+	update_measurements(&data);
 	data.exit = FALSE;
-
-	data.psi.x = 1/sqrt(2);
-	data.psi.y = 0;
-	data.psi.z = 0;
-	data.psi.h = 1/sqrt(2);
-
-	data.m[0][0] = cos(data.theta);
-	data.m[0][1] = 0;
-	data.m[1][0] = 0;
-	data.m[1][1] = sin(data.theta);
-
-	data.n[0][0] = 0;
-	data.n[0][1] = cos(data.epsilon);
-	data.n[1][0] = sin(data.epsilon);
-	data.n[1][1] = 0;
-
-//	data.m[0][0] = 1;
-//	data.m[0][1] = 0;
-//	data.m[1][0] = 0;
-//	data.m[1][1] = 1;
-
-//	data.n[0][0] = 1;
-//	data.n[0][1] = 0;
-//	data.n[1][0] = 0;
-//	data.n[1][1] = 1;
-
 
 	gtk_init(&argc, &argv);
 
@@ -67,8 +45,8 @@ int main(int argc, char *argv[])
 	gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
 	gtk_container_add(GTK_CONTAINER (window), grid);
 
-	label = gtk_label_new("Bonjour monsieur");
-	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+	data.text2print = gtk_label_new("Commencez par vous connecter au serveur graphique.");
+	gtk_grid_attach(GTK_GRID(grid), data.text2print, 0, 0, 2, 1);
 
 	button = gtk_button_new_with_label("Connecter");
 	g_signal_connect(button, "clicked", G_CALLBACK(connectionButton), (gpointer)&data);

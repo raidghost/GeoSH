@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
 	double angleX = 0, angleY = 0, angleZ = 0;
 
 	Point psiOld, psiNew;
-	psiOld.x = 0;
-	psiOld.y = 1/sqrt(2);
-	psiOld.z = 1/sqrt(2);
-	psiOld.h = 0;
+	psiOld.x = 1/sqrt(2);
+	psiOld.y = 0;
+	psiOld.z = 0;
+	psiOld.h = 1/sqrt(2);
 	psiNew = psiOld;
 
 	int n;

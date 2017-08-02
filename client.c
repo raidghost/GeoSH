@@ -67,8 +67,8 @@ int talk2server(struct serverTalk *data)
 		strcpy(buffer, "exit");
 	else
 	{
-		sprintf(buffer, "newPsi %lf %lf %lf %lf", data->psi.x, data->psi.y, data->psi.z, data->psi.h);
-		g_print("Voilà : %s\n", buffer);
+		sprintf(buffer, "newPsi %lf %lf %lf %lf", data->psi_current->x, data->psi_current->y, data->psi_current->z, data->psi_current->h);
+		g_print("On envoie au serveur \"%s\"\n", buffer);
 	}
 
 	n = write(sockfd, buffer, strlen(buffer));
