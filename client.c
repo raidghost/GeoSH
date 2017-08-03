@@ -60,7 +60,7 @@ int talk2server(struct serverTalk *data)
 	GtkTextIter start, end;
 	struct sockaddr_in serverAddress = data->serverAddress;
 
-	gtk_text_buffer_get_bounds (data->bufferGtk, &start, &end);
+	gtk_text_buffer_get_bounds(data->bufferGtk, &start, &end);
 	bzero(buffer, 256);
 
 	if(data->exit)

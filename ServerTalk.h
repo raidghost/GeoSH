@@ -6,6 +6,7 @@
 typedef struct serverTalk serverTalk;
 struct serverTalk
 {
+	struct sockaddr_in serverAddress;
 	int sockfd;
 	int exit;
 	double theta;
@@ -25,9 +26,14 @@ struct serverTalk
 	//States. psi_ij should be the state once Alice has just seen i and Bob j.
 	Point psi_00, psi_01, psi_10, psi_11;
 	Point *psi_current;//The current psi to print. This should point toward one of the previous psi.
-	GtkTextBuffer *bufferGtk;
+
+	//Devil's input (= your input :P)
+	GtkWidget *spinButtonX;
+	GtkWidget *spinButtonY;
+	GtkWidget *randomInputs;//A checkbox to know if the user wants random inputs or not.
+
 	GtkWidget *text2print;
-	struct sockaddr_in serverAddress;
+	GtkTextBuffer *bufferGtk;
 };
 
 void init_psi(serverTalk* s);

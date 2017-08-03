@@ -17,6 +17,8 @@
 #define HOST "localhost"
 
 #define PI 3.14159
+#define THETA_INIT (PI / 3)
+#define EPSILON_INIT (PI / 8)
 
 int main(int argc, char *argv[])
 {
@@ -26,8 +28,8 @@ int main(int argc, char *argv[])
 	GtkWidget *window, *grid, *button, *textview;
 
 	init_psi(&data);
-	data.theta = PI / 3;
-	data.epsilon = PI / 8;
+	data.theta = THETA_INIT;
+	data.epsilon = EPSILON_INIT;
 	update_measurements(&data);
 	data.exit = FALSE;
 
@@ -41,8 +43,8 @@ int main(int argc, char *argv[])
 	grid = gtk_grid_new();
 	gtk_grid_set_row_spacing(GTK_GRID(grid), 20);
 	gtk_grid_set_column_spacing(GTK_GRID(grid), 20);
-	gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
-	gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
+	gtk_grid_set_row_homogeneous(GTK_GRID(grid), FALSE);
+	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
 	gtk_container_add(GTK_CONTAINER (window), grid);
 
 	data.text2print = gtk_label_new("Commencez par vous connecter au serveur graphique.");
@@ -52,36 +54,46 @@ int main(int argc, char *argv[])
 	g_signal_connect(button, "clicked", G_CALLBACK(connectionButton), (gpointer)&data);
 	gtk_grid_attach(GTK_GRID(grid), button, 2, 0, 1, 1);
 
-	button = gtk_button_new_with_label("Launch");
-	g_signal_connect(button, "clicked", G_CALLBACK(launch), (gpointer)&data);
-	gtk_grid_attach(GTK_GRID (grid), button, 0, 2, 1, 1);
-
-	button = gtk_button_new_with_label("Quit");
-	g_signal_connect(button, "clicked", G_CALLBACK(quit), (gpointer)&data);
-	gtk_grid_attach(GTK_GRID (grid), button, 1, 2, 1, 1);
-
 	GtkAdjustment *vAdjustmentTheta = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentTheta));
-	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_theta), &data);
-	gtk_grid_attach(GTK_GRID(grid), button, 2, 1, 1, 1);
+	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_theta), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 1, 5);
 
 	GtkAdjustment *vAdjustmentEpsilon = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentEpsilon));
-	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_epsilon), &data);
-	gtk_grid_attach(GTK_GRID(grid), button, 3, 1, 1, 1);
+	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_epsilon), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID(grid), button, 1, 1, 1, 5);
+
+	data.spinButtonX = gtk_spin_button_new_with_range(0, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), data.spinButtonX, 2,1,1,1);
+
+	data.spinButtonY = gtk_spin_button_new_with_range(0, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), data.spinButtonY, 3,1,1,1);
+
+	button = gtk_button_new_with_label("Launch");
+	g_signal_connect(button, "clicked", G_CALLBACK(launch), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID (grid), button, 0, 6, 1, 1);
+
+	button = gtk_button_new_with_label("Quit");
+	g_signal_connect(button, "clicked", G_CALLBACK(quit), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID (grid), button, 1, 6, 1, 1);
 
 	button = gtk_button_new_with_label("Reset Psi");
 	g_signal_connect(button, "clicked", G_CALLBACK(resetPsi), (gpointer)&data);
-	gtk_grid_attach(GTK_GRID(grid), button, 2, 2, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), button, 2, 6, 1, 1);
+
+	textview = gtk_text_view_new();
+	data.bufferGtk = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+	gtk_text_buffer_set_text(data.bufferGtk, "new_matrices", -1);
+	gtk_grid_attach(GTK_GRID(grid), textview, 0, 7, 2, 2);
+
 
 	button = gtk_button_new_with_label("Play");
 	g_signal_connect(button, "clicked", G_CALLBACK(play), (gpointer)&data);
-	gtk_grid_attach(GTK_GRID(grid), button, 2, 3, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), button, 3, 7, 1, 1);
 
-	textview = gtk_text_view_new();
-	data.bufferGtk = gtk_text_view_get_buffer(GTK_TEXT_VIEW (textview));
-	gtk_text_buffer_set_text(data.bufferGtk, "new_matrices", -1);
-	gtk_grid_attach(GTK_GRID(grid), textview, 0, 1, 2, 1);
+	data.randomInputs = gtk_check_button_new_with_label("Random Inputs");
+	gtk_grid_attach(GTK_GRID(grid), data.randomInputs, 4, 7, 1, 1);
 
 	gtk_widget_show_all(window);
 	gtk_main();

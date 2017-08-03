@@ -17,22 +17,64 @@
 #define PORT 2000
 #define HOST "localhost"
 
+
 void play(GtkWidget* button, gpointer gdata)
-{
+{//On sélectionne une valeur arbitraire pour le post measurement state (il y en a deux possibles à chaque fois).
 	struct serverTalk *data = (struct serverTalk*)gdata;
 	gchar text[256] = "";
-	int x = 0, y = 0;
+	int x = 0, y = 0, m = 0, n = 0;//m and n correspond to what Alice and Bob observe.
+	double probaGagner = 0, proba1 = 0, proba2 = 0;
 
-/*	x = rand() % 2;
-	y = rand() % 2;*/
-
-	if(x == 0 && y == 0)
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(data->randomInputs)))
 	{
+		x = rand() % 2;
+		y = rand() % 2;
+	}
+	else
+	{
+		x = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(data->spinButtonX));
+		y = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(data->spinButtonY));
+	}
+
+	if((x == 0 && y == 0) || (x == 0 && y == 1) || (x == 1 && y == 0))
+	{//On gagne ssi Alice et Bob répondent la même chose.
 		data->psi_current = &(data->psi_00);
-		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", proba(data->psi_current, data->m0_0, data->n0_0), x, y);
+		proba1 = proba(data->psi_current, data->m0_0, data->n0_0);
+		proba2 = proba(data->psi_current, data->m1_0, data->n1_0);
+		probaGagner = proba1 + proba2;
+
+		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+
 		*data->psi_current = measure(data->psi_current, data->m0_0, data->n0_0);
 	}
-	
+	else if(x == 0 && y == 1)
+	{//On gagne ssi Alice et Bob répondent la même chose.
+		data->psi_current = &(data->psi_01);
+		proba1 = proba(data->psi_current, data->m0_0, data->n0_1);
+		proba2 = proba(data->psi_current, data->m1_0, data->n1_1);
+		probaGagner = proba1 + proba2;
+		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		*data->psi_current = measure(data->psi_current, data->m0_0, data->n0_1);
+	}
+	else if(x == 1 && y == 0)
+	{//On gagne ssi Alice et Bob répondent la même chose.
+		data->psi_current = &(data->psi_10);
+		proba1 = proba(data->psi_current, data->m0_1, data->n0_0);
+		proba2 = proba(data->psi_current, data->m1_1, data->n1_0);
+		probaGagner = proba1 + proba2;
+		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		*data->psi_current = measure(data->psi_current, data->m0_1, data->n0_0);
+	}
+	else//(x == 1 && y == 1)
+	{//On gagne ssi Alice et Bob ne répondent pas la même chose.
+		data->psi_current = &(data->psi_11);
+		proba1 = proba(data->psi_current, data->m0_1, data->n1_1);
+		proba2 = proba(data->psi_current, data->m1_1, data->n0_1);
+		probaGagner = proba1 + proba2;
+		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		*data->psi_current = measure(data->psi_current, data->m0_1, data->n1_1);
+	}
+
 	gtk_label_set_text(GTK_LABEL(data->text2print), text);
 	talk2server(data);
 }
@@ -41,7 +83,10 @@ int connectionButton(GtkWidget* button, gpointer gdata)
 {
 	if(strcmp(gtk_button_get_label(GTK_BUTTON(button)), "Connecter") == 0){
 		if(connect2server((serverTalk*)gdata) == EXIT_SUCCESS)
+		{
 			gtk_button_set_label(GTK_BUTTON(button), "Déconnecter");
+			gtk_label_set_text(GTK_LABEL(((struct serverTalk*)gdata)->text2print), "Vous pouvez maintenant pipauter les paramètres et appuyer sur \"Play\".");
+		}
 		else
 			g_print("Erreur de connexion");
 	}
@@ -79,6 +124,7 @@ void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
 void resetPsi(GtkWidget *widget, gpointer gdata)
 {
 	init_psi((serverTalk*)gdata);
+	gtk_label_set_text(GTK_LABEL(((serverTalk*)gdata)->text2print), "Appuyez sur \"Play\".");
 	talk2server((serverTalk*)gdata);
 }
 
