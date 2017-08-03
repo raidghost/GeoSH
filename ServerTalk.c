@@ -29,15 +29,45 @@ void init_psi(serverTalk* s)
 	g_print("On reset psi.\n");
 }
 
-void update_measurements(serverTalk* s)
+void update_measurements(serverTalk* data)
 {
-	s->m0_0[0][0] = cos(s->theta);
-	s->m0_0[0][1] = 0;
-	s->m0_0[1][0] = 0;
-	s->m0_0[1][1] = sin(s->theta);
+	data->m0_0[0][0] = cos(data->theta_00);
+	data->m0_0[0][1] = 0;
+	data->m0_0[1][0] = 0;
+	data->m0_0[1][1] = sin(data->theta_00);
 
-	s->n0_0[0][0] = 0;
-	s->n0_0[0][1] = cos(s->epsilon);
-	s->n0_0[1][0] = sin(s->epsilon);
-	s->n0_0[1][1] = 0;
+	data->m0_1[0][0] = 0;
+	data->m0_1[0][1] = cos(data->theta_00);
+	data->m0_1[1][0] = sin(data->theta_00);
+	data->m0_1[1][1] = 0;
+	
+	data->n0_0[0][0] = cos(data->epsilon_00);
+	data->n0_0[0][1] = 0;
+	data->n0_0[1][0] = 0;
+	data->n0_0[1][1] = sin(data->epsilon_00);
+
+	data->n0_1[0][0] = 0;
+	data->n0_1[0][1] = cos(data->epsilon_00);
+	data->n0_1[1][0] = sin(data->epsilon_00);
+	data->n0_1[1][1] = 0;
+	
+	data->m1_0[0][0] = cos(data->theta_01);
+	data->m1_0[0][1] = 0;
+	data->m1_0[1][0] = 0;
+	data->m1_0[1][1] = sin(data->theta_01);
+
+	data->m1_1[0][0] = 0;
+	data->m1_1[0][1] = cos(data->theta_01);
+	data->m1_1[1][0] = sin(data->theta_01);
+	data->m1_1[1][1] = 0;
+
+	data->n1_0[0][0] = cos(data->epsilon_01);
+	data->n1_0[0][1] = 0;
+	data->n1_0[1][0] = 0;
+	data->n1_0[1][1] = sin(data->epsilon_01);
+
+	data->n1_1[0][0] = 0;
+	data->n1_1[0][1] = cos(data->epsilon_01);
+	data->n1_1[1][0] = sin(data->epsilon_01);
+	data->n1_1[1][1] = 0;
 }

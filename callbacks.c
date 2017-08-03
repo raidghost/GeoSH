@@ -23,7 +23,7 @@ void play(GtkWidget* button, gpointer gdata)
 	struct serverTalk *data = (struct serverTalk*)gdata;
 	gchar text[256] = "";
 	int x = 0, y = 0, m = 0, n = 0;//m and n correspond to what Alice and Bob observe.
-	double probaGagner = 0, proba1 = 0, proba2 = 0;
+	long double probaGagner = 0, proba1 = 0, proba2 = 0;
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(data->randomInputs)))
 	{
@@ -36,42 +36,42 @@ void play(GtkWidget* button, gpointer gdata)
 		y = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(data->spinButtonY));
 	}
 
-	if((x == 0 && y == 0) || (x == 0 && y == 1) || (x == 1 && y == 0))
+	if(x == 0 && y == 0)
 	{//On gagne ssi Alice et Bob répondent la même chose.
 		data->psi_current = &(data->psi_00);
 		proba1 = proba(data->psi_current, data->m0_0, data->n0_0);
-		proba2 = proba(data->psi_current, data->m1_0, data->n1_0);
+		proba2 = proba(data->psi_current, data->m0_1, data->n0_1);
 		probaGagner = proba1 + proba2;
 
-		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		sprintf(text, "Alice et Bob gagnent avec proba %LF (x = %d, y = %d)\n", probaGagner, x, y);
 
 		*data->psi_current = measure(data->psi_current, data->m0_0, data->n0_0);
 	}
 	else if(x == 0 && y == 1)
 	{//On gagne ssi Alice et Bob répondent la même chose.
 		data->psi_current = &(data->psi_01);
-		proba1 = proba(data->psi_current, data->m0_0, data->n0_1);
-		proba2 = proba(data->psi_current, data->m1_0, data->n1_1);
+		proba1 = proba(data->psi_current, data->m0_0, data->n1_0);
+		proba2 = proba(data->psi_current, data->m0_1, data->n1_1);
 		probaGagner = proba1 + proba2;
-		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		sprintf(text, "Alice et Bob gagnent avec proba %LF (x = %d, y = %d)\n", probaGagner, x, y);
 		*data->psi_current = measure(data->psi_current, data->m0_0, data->n0_1);
 	}
 	else if(x == 1 && y == 0)
 	{//On gagne ssi Alice et Bob répondent la même chose.
 		data->psi_current = &(data->psi_10);
-		proba1 = proba(data->psi_current, data->m0_1, data->n0_0);
-		proba2 = proba(data->psi_current, data->m1_1, data->n1_0);
+		proba1 = proba(data->psi_current, data->m1_0, data->n0_0);
+		proba2 = proba(data->psi_current, data->m1_1, data->n0_1);
 		probaGagner = proba1 + proba2;
-		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		sprintf(text, "Alice et Bob gagnent avec proba %LF (x = %d, y = %d)\n", probaGagner, x, y);
 		*data->psi_current = measure(data->psi_current, data->m0_1, data->n0_0);
 	}
 	else//(x == 1 && y == 1)
 	{//On gagne ssi Alice et Bob ne répondent pas la même chose.
 		data->psi_current = &(data->psi_11);
-		proba1 = proba(data->psi_current, data->m0_1, data->n1_1);
-		proba2 = proba(data->psi_current, data->m1_1, data->n0_1);
+		proba1 = proba(data->psi_current, data->m1_0, data->n1_1);
+		proba2 = proba(data->psi_current, data->m1_1, data->n1_0);
 		probaGagner = proba1 + proba2;
-		sprintf(text, "Alice et Bob gagnent avec proba %lf (x = %d, y = %d)\n", probaGagner, x, y);
+		sprintf(text, "Alice et Bob gagnent avec proba %LF (x = %d, y = %d)\n", probaGagner, x, y);
 		*data->psi_current = measure(data->psi_current, data->m0_1, data->n1_1);
 	}
 
@@ -97,28 +97,61 @@ int connectionButton(GtkWidget* button, gpointer gdata)
 }
 
 void launch(GtkWidget *button, gpointer gdata)
-{
-	talk2server((serverTalk*)gdata);
+{//Gérer les dépassement de buffer
+	struct serverTalk *data = (struct serverTalk*)gdata;
+	char text[256] = "";
+
+	if(data->exit)
+		sprintf(text, "exit");
+	else
+		sprintf(text, "newPsi %LF %LF %LF %LF", data->psi_current->x, data->psi_current->y, data->psi_current->z, data->psi_current->h);
+
+	gtk_text_buffer_set_text(data->bufferGtk, text, -1);
+	talk2server(data);
 }
 
-void scale_adjustment_theta(GtkWidget *widget, gpointer gdata)
+void scale_adjustment_theta_00(GtkWidget *widget, gpointer gdata)
 {
 	struct serverTalk* data = (struct serverTalk*)gdata;
-	char command[256] = "";
 
-	data->theta = gtk_range_get_value(GTK_RANGE(widget));
-	data->m0_0[0][0] = cos(data->theta);
-	data->m0_0[1][1] = sin(data->theta);
+	data->theta_00 = gtk_range_get_value(GTK_RANGE(widget));
+	data->m0_0[0][0] = cos(data->theta_00);
+	data->m0_0[1][1] = sin(data->theta_00);
+	data->m0_1[0][1] = cos(data->theta_00);
+	data->m0_1[1][0] = sin(data->theta_00);
 }
 
-void scale_adjustment_epsilon(GtkWidget *widget, gpointer gdata)
+void scale_adjustment_epsilon_00(GtkWidget *widget, gpointer gdata)
 {
 	struct serverTalk* data = (struct serverTalk*)gdata;
-	char command[256] = "";
 
-	data->epsilon = gtk_range_get_value(GTK_RANGE(widget));
-	data->n0_0[0][1] = cos(data->epsilon);
-	data->n0_0[1][0] = sin(data->epsilon);
+	data->epsilon_00 = gtk_range_get_value(GTK_RANGE(widget));
+	data->n0_0[0][0] = cos(data->epsilon_00);
+	data->n0_0[1][1] = sin(data->epsilon_00);
+	data->n0_1[0][1] = cos(data->epsilon_00);
+	data->n0_1[1][0] = sin(data->epsilon_00);
+}
+
+void scale_adjustment_theta_01(GtkWidget *widget, gpointer gdata)
+{
+	struct serverTalk* data = (struct serverTalk*)gdata;
+
+	data->theta_01 = gtk_range_get_value(GTK_RANGE(widget));
+	data->m1_0[0][0] = cos(data->theta_01);
+	data->m1_0[1][1] = sin(data->theta_01);
+	data->m1_1[0][1] = cos(data->theta_01);
+	data->m1_1[1][0] = sin(data->theta_01);
+}
+
+void scale_adjustment_epsilon_01(GtkWidget *widget, gpointer gdata)
+{
+	struct serverTalk* data = (struct serverTalk*)gdata;
+
+	data->epsilon_01 = gtk_range_get_value(GTK_RANGE(widget));
+	data->n1_0[0][0] = cos(data->epsilon_01);
+	data->n1_0[1][1] = sin(data->epsilon_01);
+	data->n1_1[0][1] = cos(data->epsilon_01);
+	data->n1_1[1][0] = sin(data->epsilon_01);
 }
 
 void resetPsi(GtkWidget *widget, gpointer gdata)

@@ -67,7 +67,7 @@ int talk2server(struct serverTalk *data)
 		strcpy(buffer, "exit");
 	else
 	{
-		sprintf(buffer, "newPsi %lf %lf %lf %lf", data->psi_current->x, data->psi_current->y, data->psi_current->z, data->psi_current->h);
+		sprintf(buffer, "newPsi %LF %LF %LF %LF", data->psi_current->x, data->psi_current->y, data->psi_current->z, data->psi_current->h);
 		g_print("On envoie au serveur \"%s\"\n", buffer);
 	}
 

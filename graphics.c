@@ -9,11 +9,11 @@
 Point proj_stereo(const Point *m)
 {
     Point mp;
-    double lambda;
+    long double lambda;
     if(m->h == 1)
         lambda = 0;
     else
-        lambda = (double) 1/(1-m->h);
+        lambda = (long double) 1/(1-m->h);
 
     mp.x = lambda * m->x;
     mp.y = lambda * m->y;

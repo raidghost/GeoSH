@@ -78,7 +78,7 @@ int parseCommand(char* command, Point* psi)
 		token = strtok(NULL, delimiter);
 		COMMA2COLON(token);
 		psi->h = atof(token);
-		fprintf(stderr, "On a mis à jour psi : %lf, %lf, %lf, %lf\n", psi->x, psi->y, psi->z, psi->h);
+		fprintf(stderr, "On a mis à jour psi : %LF, %LF, %LF, %LF\n", psi->x, psi->y, psi->z, psi->h);
 		return 1;
 	}
 	else

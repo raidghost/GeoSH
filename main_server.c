@@ -165,6 +165,3 @@ int main(int argc, char *argv[])
 	close_server(sockets);
 	return 0;
 }
-
-
-

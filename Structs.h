@@ -12,10 +12,10 @@
 typedef struct Point Point;
 struct Point
 {
-    double x;
-    double y;
-    double z;
-    double h;
+    long double x;
+    long double y;
+    long double z;
+    long double h;
 };
 
 typedef struct PairInt PairInt;
