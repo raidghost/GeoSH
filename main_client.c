@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	data.epsilon_01 = EPSILON_INIT;
 	update_measurements(&data);
 	data.exit = FALSE;
+	data.listProba = new_list(1);
 
 	gtk_init(&argc, &argv);
 
@@ -56,24 +57,32 @@ int main(int argc, char *argv[])
 	g_signal_connect(button, "clicked", G_CALLBACK(connectionButton), (gpointer)&data);
 	gtk_grid_attach(GTK_GRID(grid), button, 2, 0, 1, 1);
 
+	data.probaBar = gtk_level_bar_new();
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data.probaBar), 0);
+	gtk_grid_attach(GTK_GRID(grid), data.probaBar, 3, 0, 4, 1);
+
 	GtkAdjustment *vAdjustmentTheta_00 = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentTheta_00));
 	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_theta_00), (gpointer)&data);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(vAdjustmentTheta_00), THETA_INIT);
 	gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 1, 5);
 
 	GtkAdjustment *vAdjustmentEpsilon_00 = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentEpsilon_00));
 	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_epsilon_00), (gpointer)&data);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(vAdjustmentEpsilon_00), EPSILON_INIT);
 	gtk_grid_attach(GTK_GRID(grid), button, 1, 1, 1, 5);
 
 	GtkAdjustment *vAdjustmentTheta_01 = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentTheta_01));
 	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_theta_01), (gpointer)&data);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(vAdjustmentTheta_01), THETA_INIT);
 	gtk_grid_attach(GTK_GRID(grid), button, 2, 1, 1, 5);
 
 	GtkAdjustment *vAdjustmentEpsilon_01 = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentEpsilon_01));
 	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_epsilon_01), (gpointer)&data);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(vAdjustmentEpsilon_01), EPSILON_INIT);
 	gtk_grid_attach(GTK_GRID(grid), button, 3, 1, 1, 5);
 
 	button = gtk_button_new_with_label("Launch");

@@ -76,6 +76,8 @@ void play(GtkWidget* button, gpointer gdata)
 	}
 
 	gtk_label_set_text(GTK_LABEL(data->text2print), text);
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->probaBar), probaGagner);
+	list_add(data->listProba, probaGagner);
 	talk2server(data);
 }
 

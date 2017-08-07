@@ -35,7 +35,10 @@ struct serverTalk
 	GtkWidget *randomInputs;//A checkbox to know if the user wants random inputs or not.
 
 	GtkWidget *text2print;
+	GtkWidget *probaBar;
 	GtkTextBuffer *bufferGtk;
+
+	ListProba *listProba;
 };
 
 void init_psi(serverTalk* s);

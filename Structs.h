@@ -25,4 +25,14 @@ struct PairInt
 	int y;
 };
 
+typedef struct ListProba ListProba;
+struct ListProba
+{
+	long double proba;
+	struct ListProba *next;
+};
+
+ListProba* new_list(unsigned long length);
+int list_add(ListProba *l, long double proba);
+long double mean(const ListProba *l);
 #endif
