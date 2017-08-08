@@ -25,16 +25,17 @@ int main(int argc, char *argv[])
 	srand(0);
 
 	serverTalk data;
-	GtkWidget *window, *grid, *button, *textview;
+	GtkWidget *window, *grid, *buttonConnexion, *button, *textview;
 
-	init_psi(&data);
+	data.connecte = FALSE;
 	data.theta_00 = THETA_INIT;
 	data.epsilon_00 = EPSILON_INIT;
 	data.theta_01 = THETA_INIT;
 	data.epsilon_01 = EPSILON_INIT;
-	update_measurements(&data);
 	data.exit = FALSE;
-	data.listProba = new_list(1);
+	data.listProba = NULL;
+	data.lengthListProba = 1;
+	data.plotFD = NULL;
 
 	gtk_init(&argc, &argv);
 
@@ -53,9 +54,9 @@ int main(int argc, char *argv[])
 	data.text2print = gtk_label_new("Commencez par vous connecter au serveur graphique.");
 	gtk_grid_attach(GTK_GRID(grid), data.text2print, 0, 0, 2, 1);
 
-	button = gtk_button_new_with_label("Connecter");
-	g_signal_connect(button, "clicked", G_CALLBACK(connectionButton), (gpointer)&data);
-	gtk_grid_attach(GTK_GRID(grid), button, 2, 0, 1, 1);
+	buttonConnexion = gtk_button_new_with_label("Connecter");
+	g_signal_connect(buttonConnexion, "clicked", G_CALLBACK(connectionButton), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID(grid), buttonConnexion, 2, 0, 1, 1);
 
 	data.probaBar = gtk_level_bar_new();
 	gtk_level_bar_set_value(GTK_LEVEL_BAR(data.probaBar), 0);
@@ -102,6 +103,10 @@ int main(int argc, char *argv[])
 	gtk_text_buffer_set_text(data.bufferGtk, "exit", -1);
 	gtk_grid_attach(GTK_GRID(grid), textview, 0, 7, 2, 2);
 
+	button = gtk_button_new_with_label("Plot");
+	g_signal_connect(button, "clicked", G_CALLBACK(plot), (gpointer)&data);
+	gtk_grid_attach(GTK_GRID(grid), button, 2, 7, 1, 1);
+
 	button = gtk_button_new_with_label("Play");
 	g_signal_connect(button, "clicked", G_CALLBACK(play), (gpointer)&data);
 	gtk_grid_attach(GTK_GRID(grid), button, 3, 7, 1, 1);
@@ -117,7 +122,12 @@ int main(int argc, char *argv[])
 
 
 	gtk_widget_show_all(window);
+	update_measurements(&data);
+	connectionButton(buttonConnexion, (gpointer)&data);
+	init_psi(&data);
 	gtk_main();
+	if(data.plotFD != NULL)
+		fclose(data.plotFD);
 	
 	return EXIT_SUCCESS;
 }

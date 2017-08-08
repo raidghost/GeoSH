@@ -7,12 +7,15 @@ typedef struct serverTalk serverTalk;
 struct serverTalk
 {
 	struct sockaddr_in serverAddress;
+	char currentPlotFileName[256];
 	int sockfd;
 	int exit;
+	int connecte;
 	long double theta_00;
 	long double epsilon_00;
 	long double theta_01;
 	long double epsilon_01;
+	FILE *plotFD;
 
 	//Measurements : {m0_0,m0_1} and {m1_0,m1_1} are sets of measurements for Alice.
 	long double m0_0[MATRIX_DIM][MATRIX_DIM];
@@ -39,6 +42,7 @@ struct serverTalk
 	GtkTextBuffer *bufferGtk;
 
 	ListProba *listProba;
+	unsigned long lengthListProba;
 };
 
 void init_psi(serverTalk* s);

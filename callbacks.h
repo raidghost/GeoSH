@@ -10,5 +10,6 @@ void scale_adjustment_theta_01(GtkWidget *widget, gpointer gdata);
 void scale_adjustment_epsilon_01(GtkWidget *widget, gpointer gdata);
 void resetPsi(GtkWidget *widget, gpointer gdata);
 void quit(GtkWidget *widget, gpointer gdata);
+void plot(GtkWidget *widget, gpointer gdata);
 
 #endif

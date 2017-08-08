@@ -1,5 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
-#include <netdb.h> 
+#include <netdb.h>
+#include <time.h>
+#include <unistd.h>
+
 #include <gtk/gtk.h>
 #include "ServerTalk.h"
 
@@ -26,6 +31,35 @@ void init_psi(serverTalk* s)
 	s->psi_11.h = 1/sqrt(2);
 
 	s->psi_current = &(s->psi_00);
+
+	if(s->connecte)
+	{//We have to create a new file where to record the points. We also have to clear the list of all recorded proba.
+		if(s->plotFD != NULL)
+		{
+			fclose(s->plotFD);
+			s->plotFD = NULL;
+		}
+		
+		char timeString[256] = "";
+		time_t rawtime;
+		struct tm *timeinfo;
+
+		time(&rawtime);
+		timeinfo = localtime(&rawtime);
+		strftime(timeString, 256, "%m-%d-%H-%M-%S", timeinfo);
+
+		sprintf(s->currentPlotFileName, "%s", timeString);
+		s->plotFD = fopen(s->currentPlotFileName, "w+");//Trouver un meilleur nom pour le fichier.
+
+		if(s->plotFD == NULL)
+		{
+			g_print("Erreur lors de l'ouverture du fichier data.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		list_del_all(s->listProba);
+		s->listProba = NULL;
+	}
 	g_print("On reset psi.\n");
 }
 

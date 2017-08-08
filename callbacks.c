@@ -77,17 +77,27 @@ void play(GtkWidget* button, gpointer gdata)
 
 	gtk_label_set_text(GTK_LABEL(data->text2print), text);
 	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->probaBar), probaGagner);
-	list_add(data->listProba, probaGagner);
+	data->listProba = list_add(data->listProba, probaGagner);
+	data->lengthListProba++;
+	if(data->plotFD != NULL)
+		fprintf(data->plotFD, "%ld\t%LF\n", data->lengthListProba, probaGagner);
+	else
+	{
+		g_print("ERREUR\n");
+	}
 	talk2server(data);
 }
 
 int connectionButton(GtkWidget* button, gpointer gdata)
 {
-	if(strcmp(gtk_button_get_label(GTK_BUTTON(button)), "Connecter") == 0){
-		if(connect2server((serverTalk*)gdata) == EXIT_SUCCESS)
+	serverTalk *data = (serverTalk*)gdata;
+	if(!data->connecte)
+	{
+		if(connect2server(data) == EXIT_SUCCESS)
 		{
 			gtk_button_set_label(GTK_BUTTON(button), "Déconnecter");
-			gtk_label_set_text(GTK_LABEL(((struct serverTalk*)gdata)->text2print), "Vous pouvez maintenant pipauter les paramètres et appuyer sur \"Play\".");
+			gtk_label_set_text(GTK_LABEL(data->text2print), "Vous pouvez maintenant pipauter les paramètres et appuyer sur \"Play\".");
+			data->connecte = TRUE;
 		}
 		else
 			g_print("Erreur de connexion");
@@ -158,9 +168,14 @@ void scale_adjustment_epsilon_01(GtkWidget *widget, gpointer gdata)
 
 void resetPsi(GtkWidget *widget, gpointer gdata)
 {
-	init_psi((serverTalk*)gdata);
-	gtk_label_set_text(GTK_LABEL(((serverTalk*)gdata)->text2print), "Appuyez sur \"Play\".");
-	talk2server((serverTalk*)gdata);
+	serverTalk *data = (serverTalk*)gdata;
+	init_psi(data);
+	gtk_label_set_text(GTK_LABEL(data->text2print), "Appuyez sur \"Play\".");
+
+	if(data->connecte)
+		talk2server(data);
+	else
+		g_print("Il faut d'abord se connecter au serveur.\n");
 }
 
 void quit(GtkWidget *widget, gpointer gdata)
@@ -170,4 +185,13 @@ void quit(GtkWidget *widget, gpointer gdata)
 	talk2server(data);
 	close(data->sockfd);
 	gtk_main_quit();
+}
+
+void plot(GtkWidget *widget, gpointer gdata)
+{
+	char command[256] = "";
+	serverTalk *data = (serverTalk*)gdata;
+	fflush(data->plotFD);
+	sprintf(command, "echo \"set xrange [0:100];set yrange [0:1];plot \\\"%s\\\";\" | gnuplot -p &", data->currentPlotFileName);
+	system(command);
 }

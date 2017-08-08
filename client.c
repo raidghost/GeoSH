@@ -29,14 +29,16 @@ int connect2server(serverTalk *data)
 	struct sockaddr_in serverAddress = data->serverAddress;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if(sockfd < 0){
+	if(sockfd < 0)
+	{
 		error("Erreur d'ouverture socket\n");
 		return EXIT_FAILURE;
 	}
 	data->sockfd = sockfd;
 
 	server = gethostbyname(HOST);
-	if(server == NULL){
+	if(server == NULL)
+	{
 		error("Serveur introuvable.");
 		return EXIT_FAILURE;
 	}
