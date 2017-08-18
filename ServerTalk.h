@@ -39,6 +39,7 @@ struct serverTalk
 
 	GtkWidget *text2print;
 	GtkWidget *probaBar;
+	GtkWidget *meanBar;
 	GtkTextBuffer *bufferGtk;
 
 	ListProba *listProba;

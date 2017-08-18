@@ -68,7 +68,7 @@ unsigned long list_count(ListProba *l)
 	return count;
 }
 
-long double mean(ListProba *l)
+long double list_mean(ListProba *l)
 {
 	long count = 0;
 	long double m = 0;

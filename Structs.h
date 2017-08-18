@@ -35,7 +35,7 @@ struct ListProba
 ListProba* new_list(unsigned long length);
 ListProba* list_add(ListProba *l, long double proba);
 unsigned long list_count(ListProba *l);
-long double mean(ListProba *l);
+long double list_mean(ListProba *l);
 void list_del_last(ListProba *l);
 ListProba* list_del_first(ListProba *l);
 void list_del_all(ListProba *l);

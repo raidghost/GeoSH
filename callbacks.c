@@ -79,6 +79,8 @@ void play(GtkWidget* button, gpointer gdata)
 	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->probaBar), probaGagner);
 	data->listProba = list_add(data->listProba, probaGagner);
 	data->lengthListProba++;
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->meanBar), list_mean(data->listProba));
+	g_print("Proba moyenne : %LF\n", list_mean(data->listProba));
 	if(data->plotFD != NULL)
 		fprintf(data->plotFD, "%ld\t%LF\n", data->lengthListProba, probaGagner);
 	else
@@ -171,6 +173,8 @@ void resetPsi(GtkWidget *widget, gpointer gdata)
 	serverTalk *data = (serverTalk*)gdata;
 	init_psi(data);
 	gtk_label_set_text(GTK_LABEL(data->text2print), "Appuyez sur \"Play\".");
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->probaBar), 0);
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data->meanBar), 0);
 
 	if(data->connecte)
 		talk2server(data);

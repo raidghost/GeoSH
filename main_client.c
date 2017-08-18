@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
 	data.probaBar = gtk_level_bar_new();
 	gtk_level_bar_set_value(GTK_LEVEL_BAR(data.probaBar), 0);
-	gtk_grid_attach(GTK_GRID(grid), data.probaBar, 3, 0, 4, 1);
+	gtk_grid_attach(GTK_GRID(grid), data.probaBar, 4, 0, 4, 1);
 
 	GtkAdjustment *vAdjustmentTheta_00 = gtk_adjustment_new(50, 0, 2 * PI, 1, 10, 0);
 	button = gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(vAdjustmentTheta_00));
@@ -85,6 +85,10 @@ int main(int argc, char *argv[])
 	g_signal_connect(button, "value-changed", G_CALLBACK(scale_adjustment_epsilon_01), (gpointer)&data);
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(vAdjustmentEpsilon_01), EPSILON_INIT);
 	gtk_grid_attach(GTK_GRID(grid), button, 3, 1, 1, 5);
+
+	data.meanBar = gtk_level_bar_new();
+	gtk_level_bar_set_value(GTK_LEVEL_BAR(data.meanBar), 0);
+	gtk_grid_attach(GTK_GRID(grid), data.meanBar, 4, 1, 4, 1);
 
 	button = gtk_button_new_with_label("Launch");
 	g_signal_connect(button, "clicked", G_CALLBACK(launch), (gpointer)&data);

@@ -59,6 +59,7 @@ void init_psi(serverTalk* s)
 
 		list_del_all(s->listProba);
 		s->listProba = NULL;
+		s->lengthListProba = 0;
 	}
 	g_print("On reset psi.\n");
 }
